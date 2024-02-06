@@ -1,4 +1,6 @@
-#include <iostream>
+#include <stdio.h>
+#include <systemtopologyapi.h>
+#include <string>
 
 // 7Zip is a dependency of this program,please install it.
 // Java is also a dependency of this program, get that too
@@ -40,35 +42,41 @@ int main()
     std::string dotApks = ".apks";
     std::string dotzip = ".zip";
 
-    std::cout << "Paste the .aab file path along with its name: \n";
-    std::cin >> bundleFilePath;
+    printf( "Paste the .aab file path along with its name: \n");
+    char* tmp = new char[50];
+    scanf("%s",tmp);
+    bundleFilePath = tmp;
     finalExtractName = fileName(bundleFilePath);
     std::string buildCommand = "java -jar " + bundleToolFilePath + " build-apks --mode=universal --bundle=" + bundleFilePath + " --output=" + tempBundlefileName + dotApks;
     const char *finalbuildCommand = buildCommand.c_str();
     system(finalbuildCommand);
-    std::cout << "Done..\n";
+    printf( "Done..\n");
 
     // Lets rename it
     std::string rename = "rename " + tempBundlefileName + dotApks + " " + tempBundlefileName + dotzip;
     const char *renameCommand = rename.c_str();
     system(renameCommand);
-    std::cout << " Fine Renamed Successfully..\n";
+    printf( " File Renamed Successfully..\n");
 
     // Now Lets Extract the apk file from the zip file using 7zip cmd
     std::string extract = "7z x " + tempBundlefileName + dotzip + " *.apk";
     const char *extractCommand = extract.c_str();
     system(extractCommand);
-    std::cout << "Apk Extracted..\n";
+    printf( "Apk Extracted..\n");
 
-    //Now lets rename the apk to the .aab file name
-   
-    rename = "rename Universal.apk " + finalExtractName+".apk";
-    const char* apkRename = rename.c_str();
+    // Now lets remove the temp zip file as we no longer need it
+    std::string deleteTemp = "del " + tempBundlefileName+dotzip;
+    const char* deleteTempCommand = deleteTemp.c_str(); 
+    system(deleteTempCommand);
+    printf("Deleted Temp files..\n");
+
+    // Now lets rename the apk to the .aab file name
+    rename = "rename Universal.apk " + finalExtractName + ".apk";
+    const char *apkRename = rename.c_str();
     system(apkRename);
 
-    std::cout<<"Apk File Renamed\n";
-    std::cout<<"Process: Success\n";
+    printf( "Apk File Renamed..\n");
+    printf( "Process: Success\n");
 
-    
     return 0;
 }
