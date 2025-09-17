@@ -37,19 +37,74 @@ int main()
 
     std::string bundleToolFilePath = "resources/bundletool-all-1.15.6.jar";
     std::string tempBundlefileName = "Temp-out.apks";
+    int buildResult = 0;
+
     std::string bundleFilePath;
+
+    // keystore variables
+    std::string keystoreFilePath;
+    std::string keyPass;
+    std::string keyAlias;
+    std::string aliasPassword;
+
+    // extensions and name variables
     std::string finalExtractName;
     std::string dotApks = ".apks";
     std::string dotzip = ".zip";
 
+    // get the aab file path
     printf( "Paste the .aab file path along with its name: \n");
     char* tmp = new char[50];
     scanf("%s",tmp);
+
+    // get the keystore file path otherwise we will fall back to the default keystore
+    printf("Past the keystore path for signing this apk(or type no to use the default keystore): \n");
+    char* keystorePath = new char[50];
+    scanf("%s",keystorePath);
+
+
+    // convert this into the string objects
     bundleFilePath = tmp;
+    keystoreFilePath = keystorePath;
+
+
+    // extract the name of the aab file using the method above
     finalExtractName = fileName(bundleFilePath);
+
+    if(keystoreFilePath.length() == 2){
     std::string buildCommand = "java -jar " + bundleToolFilePath + " build-apks --mode=universal --bundle=" + bundleFilePath + " --output=" + tempBundlefileName + dotApks;
     const char *finalbuildCommand = buildCommand.c_str();
-    system(finalbuildCommand);
+    buildResult  = system(finalbuildCommand);
+    }
+    else{
+        // get the passwords of the keystores
+        printf("Enter the keystore passwoed: \n");
+        char* keystorePass = new char[20];
+        scanf("%s",keystorePass);
+
+        printf("Enter the key alias name : \n");
+        char* alias = new char[20];
+        scanf("%s",alias);
+ 
+        
+        printf("Enter the alias passwoed: \n");
+        char* aliasPass = new char[20];
+        scanf("%s",aliasPass);
+ 
+
+        // covert this to std::string objects
+        keyPass = keystorePass;
+        aliasPassword = keystorePass;
+        keyAlias = aliasPass;
+
+        std::string buildCommand = "java -jar " + bundleToolFilePath + " build-apks --mode=universal --bundle=" + bundleFilePath + " --output=" + tempBundlefileName + dotApks + " --ks=" + keystoreFilePath + " --ks-key-alias=" + keyAlias + " --ks-pass=pass:" + keyPass + " --key-pass=pass:" + aliasPassword;
+
+        // run this command
+        const char *finalbuildCommand = buildCommand.c_str();
+        buildResult = system(finalbuildCommand);       
+    }
+
+    if(buildResult == 0){
     printf( "Done..\n");
 
     // Lets rename it
@@ -76,7 +131,13 @@ int main()
     system(apkRename);
 
     printf( "Apk File Renamed..\n");
+ 
     printf( "Process: Success\n");
+    }
+    else{
+        printf("Command failed with code: %i \n",buildResult);
+    }
 
-    return 0;
+
+    return EXIT_SUCCESS;
 }
