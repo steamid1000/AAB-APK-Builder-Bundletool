@@ -9,7 +9,7 @@
 // 7Zip is a dependency of this program,please install it.
 // Java is also a dependency of this program, get that too
 
-const std::string bundleToolFilePath = "resources/bundletool-all-1.15.6.jar";
+const std::string bundleToolFilePath = "../resources/bundletool-all-1.15.6.jar";
 const std::string tempBundlefileName = "Temp-out.apks";
 
 class Spinner
